@@ -101,7 +101,7 @@ import { useRoute } from "@kaviar/x-ui";
 const Component = () => {
   // This gets you access to our custom Router which can inteligently create routes by name and others
   const router = useRouter();
-  const path = router.path("projects", {
+  const path = router.path(HOME_PAGE, {
     projectId: "XXX",
   });
 
@@ -129,8 +129,6 @@ class Projects extends Collection<IProject> {
   // This should be the same as the name you've given the CRUD on the backend
   name = "projects";
 
-  // The project already exposes methods for CRUD operations
-
   // You have ability here to enter additional methods
   getProjectMemberCount(projectId: any) {
     return this.apolloClient.query({
@@ -141,6 +139,8 @@ class Projects extends Collection<IProject> {
 ```
 
 No one would stop you to use directly `useQuery`, however this is a more javascript-oriented approach to things, which we believe accelerates development
+
+// TODO: allow mutation names customisations
 
 ```tsx title="Usage"
 import { Projects } from "your-path/Projects.collection";
@@ -161,6 +161,15 @@ const ProjectList = () => {
       )
       .then(setResults);
   }, []);
+
+  projects.update(
+    { _id },
+    {
+      $set: {
+        status: StatusEnum.READY,
+      },
+    }
+  );
 
   return (
     <ul>
@@ -278,9 +287,22 @@ class MyLoader extends Smart {
 
 const Component = () => {
   const myLoader = useSmart(MyLoader);
+
+  // myLoader.state.users
+  // myLoader.loadUsers()
 };
 
 const ComponentWrapper = smart(MyLoader, {
   // optional config
 })(Compnent);
+```
+
+```ts
+projects.find(
+  {},
+  {},
+  {
+    reactive: true,
+  }
+);
 ```

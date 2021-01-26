@@ -4,7 +4,7 @@ import { Kernel, ContainerInstance } from "@kaviar/core";
 import { XRouter } from "./XRouter";
 import { ApolloProvider } from "@apollo/client/react";
 import { ApolloClient } from "../graphql/ApolloClient";
-import { use } from "./hooks";
+import { use, useContainer } from "./hooks";
 import { XBrowserRouter } from "./XBrowserRouter";
 
 export const ContainerContext = React.createContext<ContainerInstance>(null);

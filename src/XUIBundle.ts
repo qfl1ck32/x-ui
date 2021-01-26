@@ -4,15 +4,17 @@ import {
   KernelAfterInitEvent,
   KernelBeforeInitEvent,
 } from "@kaviar/core";
-import { IXUIBundleConfig } from "./defs";
-import { RoutingPreparationEvent } from "./events/RoutingPreparationEvent";
-import { XRouter } from "./react/XRouter";
 import { setDefaults } from "@kaviar/smart";
-import { APOLLO_CLIENT_OPTIONS_TOKEN } from "./constants";
 import { InMemoryCache } from "@apollo/client/core";
 
+import { IXUIBundleConfig } from "./defs";
+import { APOLLO_CLIENT_OPTIONS_TOKEN } from "./constants";
+import { RoutingPreparationEvent } from "./events/RoutingPreparationEvent";
+import { XRouter } from "./react/XRouter";
+import { ApolloClient } from "./graphql/ApolloClient";
+
 export class XUIBundle extends Bundle<IXUIBundleConfig> {
-  defaultConfig = {
+  protected defaultConfig = {
     graphql: {},
   };
 
@@ -35,19 +37,21 @@ export class XUIBundle extends Bundle<IXUIBundleConfig> {
   }
 
   async prepare() {
-    console.log(this.config);
     if (!this.config.graphql.cache) {
       this.config.graphql.cache = new InMemoryCache();
     }
 
-    this.container.set(APOLLO_CLIENT_OPTIONS_TOKEN, this.config.graphql);
+    this.container.set({
+      id: APOLLO_CLIENT_OPTIONS_TOKEN,
+      value: this.config.graphql,
+    });
   }
 
   async init() {
     const container = this.container;
     setDefaults({
       factory(targetType, config) {
-        return this.container.get(targetType);
+        return container.get(targetType);
       },
     });
   }

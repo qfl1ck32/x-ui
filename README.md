@@ -1,11 +1,11 @@
-<h1 align="center">KAVIAR SECURITY-MONGO-BUNDLE</h1>
+<h1 align="center">KAVIAR X-UI</h1>
 
 <p align="center">
-  <a href="https://travis-ci.org/kaviarjs/xui">
-    <img src="https://api.travis-ci.org/kaviarjs/xui.svg?branch=master" />
+  <a href="https://travis-ci.org/kaviarjs/x-ui">
+    <img src="https://api.travis-ci.org/kaviarjs/x-ui.svg?branch=master" />
   </a>
-  <a href="https://coveralls.io/github/kaviarjs/xui?branch=master">
-    <img src="https://coveralls.io/repos/github/kaviarjs/xui/badge.svg?branch=master" />
+  <a href="https://coveralls.io/github/kaviarjs/x-ui?branch=master">
+    <img src="https://coveralls.io/repos/github/kaviarjs/x-ui/badge.svg?branch=master" />
   </a>
 </p>
 
