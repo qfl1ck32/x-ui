@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@kaviar/ejson": "^1.2.0",
+    "@kaviar/smart": "^1.0.0",
     "@types/mongodb": "^3.6.3",
     "@types/react-test-renderer": "^16.9.3",
     "history": "^4.10.1",
