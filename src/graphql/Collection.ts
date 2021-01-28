@@ -3,11 +3,13 @@ import { ApolloClient } from "./ApolloClient";
 import { gql, DocumentNode } from "@apollo/client/core";
 import { EJSON, ObjectId } from "@kaviar/ejson";
 import { jsonToGraphQLQuery } from "json-to-graphql-query";
+import { IEventsMap, QueryBodyType } from "./defs";
+import { UpdateQuery } from "mongodb";
 
 type CompiledQueriesTypes = "Count" | "InsertOne" | "UpdateOne" | "DeleteOne";
 
 @Service()
-export abstract class Collection<T> {
+export abstract class Collection<T = any> {
   abstract name: string;
   compiled = new Map<CompiledQueriesTypes, DocumentNode>();
 
@@ -33,7 +35,10 @@ export abstract class Collection<T> {
    * @param _id
    * @param modifier The MongoDB modifiers: @url https://docs.mongodb.com/manual/reference/operator/update/
    */
-  async updateOne(_id: ObjectId | string, modifier: any): Promise<Partial<T>> {
+  async updateOne(
+    _id: ObjectId | string,
+    modifier: UpdateQuery<T>
+  ): Promise<Partial<T>> {
     return this.runCompiledQuery("UpdateOne", {
       _id,
       modifier,
@@ -56,8 +61,8 @@ export abstract class Collection<T> {
    * @param body
    */
   async find(
-    query: QueryInput,
-    body: object = { _id: 1 }
+    query: IQueryInput,
+    body: QueryBodyType<T>
   ): Promise<Partial<T[]>> {
     return this.hybridFind(false, query, body);
   }
@@ -68,8 +73,8 @@ export abstract class Collection<T> {
    * @param body
    */
   async findOne(
-    query: QueryInput,
-    body: object = { _id: 1 }
+    query: IQueryInput,
+    body: QueryBodyType<T>
   ): Promise<Partial<T>> {
     return this.hybridFind(true, query, body);
   }
@@ -81,9 +86,33 @@ export abstract class Collection<T> {
    */
   async findOneById(
     _id: ObjectId | string,
-    body: object = { _id: 1 }
+    body: QueryBodyType<T>
   ): Promise<Partial<T>> {
     return this.hybridFind(true, { filters: { _id } }, body);
+  }
+
+  /**
+   * This simply returns a zen observable that reads messages.
+   * XSubscription is the model that handles the dataSet
+   * @param body
+   * @param options
+   */
+  subscribe(body: QueryBodyType<T>, options: ISubscriptionOptions = {}) {
+    const subscriptionName = options.subscription || `${this.name}Subscription`;
+
+    return this.apolloClient.subscribe({
+      query: gql`
+        subscription {
+          ${subscriptionName} {
+            event
+            document
+          }
+        }
+      `,
+      variables: {
+        body: EJSON.stringify(body),
+      },
+    });
   }
 
   /**
@@ -104,7 +133,7 @@ export abstract class Collection<T> {
    */
   protected hybridFind(
     single: boolean,
-    query: QueryInput,
+    query: IQueryInput,
     body: object
   ): Promise<any> {
     const operationName = this.name + (single ? "FindOne" : "Find");
@@ -162,6 +191,9 @@ export abstract class Collection<T> {
       });
   }
 
+  /**
+   * This compiles the queries so they aren't created each time.
+   */
   protected setupQueries() {
     // Mutations
     this.compiled.set(
@@ -197,14 +229,14 @@ export abstract class Collection<T> {
       "Count",
       gql`
         query ${this.name}Count($filters: EJSON!) {
-          ${this.name}UpdateOne(filters: $filters)
+          ${this.name}Count(filters: $filters)
         }
       `
     );
   }
 }
 
-export interface QueryInput {
+export interface IQueryInput {
   /**
    * MongoDB Filters
    * @url https://docs.mongodb.com/manual/reference/operator/query/
@@ -215,10 +247,14 @@ export interface QueryInput {
   /**
    * MongoDB Options
    */
-  options?: QueryOptionsInput;
+  options?: IQueryOptionsInput;
 }
 
-export interface QueryOptionsInput {
+export interface ISubscriptionOptions extends IEventsMap {
+  subscription?: string;
+}
+
+export interface IQueryOptionsInput {
   sort?: {
     [key: string]: any;
   };

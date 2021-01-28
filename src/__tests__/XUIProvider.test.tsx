@@ -6,7 +6,7 @@ import { use } from "../react/hooks";
 import { resolve } from "url";
 
 const awaitKernelInit = (kernel) => {
-  return new Promise((resolve) => {
+  return new Promise<void>((resolve) => {
     kernel.onInit(() => {
       resolve();
     });

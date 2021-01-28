@@ -1,26 +1,19 @@
 import {
   ContainerInstance,
   EventManager,
-  Constructor,
   IEventConstructor,
-  Token,
 } from "@kaviar/core";
-import { useContext, useEffect, useMemo } from "react";
+import { useContext, useEffect } from "react";
 
-import { ContainerContext } from "./XUIProvider";
-import { XRouter } from "./XRouter";
+import { ContainerContext } from "../XUIProvider";
+import { XRouter } from "../XRouter";
+import { use } from "./use";
+import { useSubscription, useCollectionSubscription } from "./useSubscription";
+
+export { use, useSubscription, useCollectionSubscription };
 
 export const useContainer = (): ContainerInstance => {
   return useContext(ContainerContext);
-};
-
-export const use = <T = any>(
-  id: Constructor<T> | Token<T> | { service: T } | any
-): T => {
-  const container = useContainer();
-  return useMemo(() => {
-    return container.get(id);
-  }, []);
 };
 
 export const useRouter = (): XRouter => {
