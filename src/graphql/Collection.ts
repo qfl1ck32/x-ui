@@ -1,8 +1,8 @@
 import { Service, Inject } from "@kaviar/core";
+import { jsonToGraphQLQuery, VariableType } from "json-to-graphql-query";
 import { ApolloClient } from "./ApolloClient";
 import { gql, DocumentNode } from "@apollo/client/core";
 import { EJSON, ObjectId } from "@kaviar/ejson";
-import { jsonToGraphQLQuery } from "json-to-graphql-query";
 import { IEventsMap, QueryBodyType } from "./defs";
 import { UpdateQuery } from "mongodb";
 
@@ -133,22 +133,39 @@ export abstract class Collection<T = any> {
    */
   protected hybridFind(
     single: boolean,
-    query: IQueryInput,
+    queryInput: IQueryInput,
     body: object
   ): Promise<any> {
     const operationName = this.name + (single ? "FindOne" : "Find");
 
+    const graphQLQuery = {
+      query: {
+        __variables: {
+          query: "QueryInput!",
+        },
+        [operationName]: Object.assign({}, body, {
+          __args: {
+            query: new VariableType("query"),
+          },
+        }),
+      },
+    };
     return this.apolloClient
       .query({
         query: gql`
-          query ${operationName}(query: QueryInput!) {
-            ${jsonToGraphQLQuery(body)}
-          }
+          ${jsonToGraphQLQuery(graphQLQuery)}
         `,
-        variables: EJSON.toJSONValue(query),
+        variables: {
+          query: {
+            filters: queryInput.filters
+              ? EJSON.stringify(queryInput.filters)
+              : "{}",
+            options: queryInput.options ?? {},
+          },
+        },
       })
       .then((result) => {
-        return result[operationName];
+        return result.data[operationName];
       });
   }
 

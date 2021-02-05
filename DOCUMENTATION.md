@@ -2,6 +2,8 @@ This bundle is a set of tools to allow you to quickly bootstrap your frontend. U
 
 ## Install
 
+You can easily create it by running `x`, choose `microservice`, and select `frontend`.
+
 ```bash
 npm i @kaviar/x-ui @apollo/client
 npm i react react-dom react-router-dom
@@ -61,11 +63,12 @@ export class UIAppBundle extends Bundle {
 ```
 
 ```tsx title="src/bundles/app/routes.ts"
-import { IRouteDefinition } from "@kaviar/x-ui-bundle";
+import { IRoute } from "@kaviar/x-ui-bundle";
 
-export const routes: IRouteDefinition = [
-  // You can add routes here directly or add them from the components by pushing here
-];
+export const HOME_PAGE: IRoute = {
+  path: "/",
+  component: Home,
+};
 ```
 
 Notice that you need to add `new UIAppBundle()` to your kernel.
@@ -252,6 +255,21 @@ useListener(XEvent, (e: XEvent) => {
 });
 ```
 
+## Live Data
+
+```ts
+import { useCollectionSubscription } from "@kaviar/x-ui";
+
+const MyPage = () => {
+  const [posts, isReady] = useCollectionSubscription(PostsCollection, {
+    // The nova body
+    title: 1,
+  });
+
+  // Show the posts if isReady
+};
+```
+
 ## The State Management
 
 There is a simple way to work. We define our state via a class, and we define our api that manipulates the state. We are using `@kaviar/smart` package:
@@ -266,10 +284,7 @@ import { Smart, ApolloClient } from "@kaviar/x-ui";
 
 // Smart is now a transient service, each time we invoke .get() from container, we get a new instance
 class MyLoader extends Smart {
-  constructor(
-    @Inject(() => ApolloClient)
-    protected readonly apolloClient
-  ) {}
+  constructor(protected readonly apolloClient: ApolloClient) {}
 
   loadUsers() {
     this.apolloClient
@@ -295,14 +310,4 @@ const Component = () => {
 const ComponentWrapper = smart(MyLoader, {
   // optional config
 })(Compnent);
-```
-
-```ts
-projects.find(
-  {},
-  {},
-  {
-    reactive: true,
-  }
-);
 ```
