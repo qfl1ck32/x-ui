@@ -51,7 +51,7 @@ export function useCollectionSubscription<T>(
     return () => {
       subscription.stop();
     };
-  }, [body]);
+  }, []);
 
   return [dataSet, isReady];
 }

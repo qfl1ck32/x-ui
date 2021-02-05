@@ -10,7 +10,6 @@ type CompiledQueriesTypes = "Count" | "InsertOne" | "UpdateOne" | "DeleteOne";
 
 @Service()
 export abstract class Collection<T = any> {
-  abstract name: string;
   compiled = new Map<CompiledQueriesTypes, DocumentNode>();
 
   constructor(
@@ -19,6 +18,8 @@ export abstract class Collection<T = any> {
   ) {
     this.setupQueries();
   }
+
+  abstract getName(): string;
 
   /**
    * Insert a single document into the remote database
@@ -98,12 +99,13 @@ export abstract class Collection<T = any> {
    * @param options
    */
   subscribe(body: QueryBodyType<T>, options: ISubscriptionOptions = {}) {
-    const subscriptionName = options.subscription || `${this.name}Subscription`;
+    const subscriptionName =
+      options.subscription || `${this.getName()}Subscription`;
 
     return this.apolloClient.subscribe({
       query: gql`
-        subscription {
-          ${subscriptionName} {
+        subscription ${subscriptionName}($body: EJSON) {
+          ${subscriptionName}(body: $body) {
             event
             document
           }
@@ -136,7 +138,7 @@ export abstract class Collection<T = any> {
     queryInput: IQueryInput,
     body: object
   ): Promise<any> {
-    const operationName = this.name + (single ? "FindOne" : "Find");
+    const operationName = this.getName() + (single ? "FindOne" : "Find");
 
     const graphQLQuery = {
       query: {
@@ -180,7 +182,6 @@ export abstract class Collection<T = any> {
     variables,
     options = {}
   ) {
-    variables = EJSON.toJSONValue(variables);
     const isMutation = ["InsertOne", "UpdateOne", "DeleteOne"].includes(
       compiledQuery
     );
@@ -193,7 +194,7 @@ export abstract class Collection<T = any> {
           ...options,
         })
         .then((result) => {
-          return result[`${this.name}${compiledQuery}`];
+          return result[`${this.getName()}${compiledQuery}`];
         });
     }
 
@@ -204,7 +205,7 @@ export abstract class Collection<T = any> {
         ...options,
       })
       .then((result) => {
-        return result[`${this.name}${compiledQuery}`];
+        return result[`${this.getName()}${compiledQuery}`];
       });
   }
 
@@ -216,8 +217,8 @@ export abstract class Collection<T = any> {
     this.compiled.set(
       "InsertOne",
       gql`
-        mutation ${this.name}InsertOne($document: EJSON!) {
-          ${this.name}InsertOne(document: $document) {
+        mutation ${this.getName()}InsertOne($document: EJSON!) {
+          ${this.getName()}InsertOne(document: $document) {
             _id
           }
         }
@@ -226,8 +227,8 @@ export abstract class Collection<T = any> {
     this.compiled.set(
       "UpdateOne",
       gql`
-        mutation ${this.name}UpdateOne($_id: ObjectId!, $modifier: EJSON!) {
-          ${this.name}UpdateOne(_id: $_id, modifier: $modifier) {
+        mutation ${this.getName()}UpdateOne($_id: ObjectId!, $modifier: EJSON!) {
+          ${this.getName()}UpdateOne(_id: $_id, modifier: $modifier) {
             _id
           }
         }
@@ -236,8 +237,8 @@ export abstract class Collection<T = any> {
     this.compiled.set(
       "DeleteOne",
       gql`
-        mutation ${this.name}DeleteOne($_id: ObjectId!) {
-          ${this.name}DeleteOne(_id: $_id)
+        mutation ${this.getName()}DeleteOne($_id: ObjectId!) {
+          ${this.getName()}DeleteOne(_id: $_id)
         }
       `
     );
@@ -245,8 +246,8 @@ export abstract class Collection<T = any> {
     this.compiled.set(
       "Count",
       gql`
-        query ${this.name}Count($filters: EJSON!) {
-          ${this.name}Count(filters: $filters)
+        query ${this.getName()}Count($filters: EJSON!) {
+          ${this.getName()}Count(filters: $filters)
         }
       `
     );

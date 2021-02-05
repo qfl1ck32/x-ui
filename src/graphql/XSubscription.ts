@@ -69,13 +69,13 @@ export class XSubscription<T extends { _id: any }> {
     if (message.event === SubscriptionEvents.REMOVED) {
       let foundDocument;
       this.dataSet = this.dataSet.filter((doc) => {
-        const isFound = doc._id.toString() !== document._id.toString();
+        const isFound = doc._id.toString() === document._id.toString();
         if (isFound) {
           foundDocument = doc;
         }
-        return isFound;
+        return !isFound;
       });
-
+      this.updateReactState();
       if (this.eventsMap.onRemoved) {
         this.eventsMap.onRemoved(foundDocument);
       }
