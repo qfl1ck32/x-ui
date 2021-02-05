@@ -44,7 +44,7 @@ export class XRouter {
     options?: IRouteGenerationProps<T, Q>
   ): string {
     let finalPath = route.path;
-    let queryPath;
+    let queryPath = "";
 
     if (options?.params) {
       for (const key in options.params) {
