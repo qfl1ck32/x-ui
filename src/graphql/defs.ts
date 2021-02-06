@@ -34,6 +34,8 @@ export interface ICollectionQueryConfig<T = any> {
   pipeline?: any[];
 }
 
+export { FilterQuery as MongoFilterQuery };
+
 /**
  * @deprecated The naming was meaningless. Please use ICollectionQueryConfig
  */
