@@ -16,7 +16,6 @@ export interface IEventsMap {
   onRemoved?: (document: any) => void;
   onAdded?: (document: any) => void;
 }
-
 export interface IQueryOptions<T = any> {
   limit?: number;
   skip?: number;

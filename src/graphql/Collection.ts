@@ -1,10 +1,11 @@
 import { Service, Inject } from "@kaviar/core";
 import { jsonToGraphQLQuery, VariableType } from "json-to-graphql-query";
 import { ApolloClient } from "./ApolloClient";
-import { gql, DocumentNode } from "@apollo/client/core";
+import { gql, DocumentNode, FetchPolicy } from "@apollo/client/core";
 import { EJSON, ObjectId } from "@kaviar/ejson";
 import { IEventsMap, QueryBodyType } from "./defs";
 import { UpdateQuery } from "mongodb";
+import { getSideBody } from "./utils/getSideBody";
 
 type CompiledQueriesTypes = "Count" | "InsertOne" | "UpdateOne" | "DeleteOne";
 
@@ -27,7 +28,7 @@ export abstract class Collection<T = any> {
    */
   async insertOne(document: Partial<T>): Promise<Partial<T>> {
     return this.runCompiledQuery("InsertOne", {
-      document,
+      document: EJSON.stringify(document),
     });
   }
 
@@ -42,7 +43,7 @@ export abstract class Collection<T = any> {
   ): Promise<Partial<T>> {
     return this.runCompiledQuery("UpdateOne", {
       _id,
-      modifier,
+      modifier: EJSON.stringify(modifier),
     });
   }
 
@@ -123,8 +124,15 @@ export abstract class Collection<T = any> {
    */
   async count(filters: any): Promise<number> {
     return this.runCompiledQuery("Count", {
-      filters,
+      filters: EJSON.stringify(filters),
     });
+  }
+
+  /**
+   * Returns the fetch policy for all queries (find/findOne/count)
+   */
+  getFetchPolicy(): FetchPolicy {
+    return "network-only";
   }
 
   /**
@@ -152,10 +160,20 @@ export abstract class Collection<T = any> {
         }),
       },
     };
+
+    if (queryInput?.options) {
+      const sideBody = getSideBody(body);
+      if (Object.keys(sideBody).length > 0) {
+        queryInput.options.sideBody = EJSON.stringify(sideBody);
+      }
+    }
+
     return this.apolloClient
       .query({
         query: gql`
-          ${jsonToGraphQLQuery(graphQLQuery)}
+          ${jsonToGraphQLQuery(graphQLQuery, {
+            ignoreFields: ["$"],
+          })}
         `,
         variables: {
           query: {
@@ -165,6 +183,7 @@ export abstract class Collection<T = any> {
             options: queryInput.options ?? {},
           },
         },
+        fetchPolicy: this.getFetchPolicy(),
       })
       .then((result) => {
         return result.data[operationName];
@@ -194,7 +213,7 @@ export abstract class Collection<T = any> {
           ...options,
         })
         .then((result) => {
-          return result[`${this.getName()}${compiledQuery}`];
+          return result.data[`${this.getName()}${compiledQuery}`];
         });
     }
 
@@ -202,10 +221,11 @@ export abstract class Collection<T = any> {
       .query({
         query: this.compiled.get(compiledQuery),
         variables,
+        fetchPolicy: this.getFetchPolicy(),
         ...options,
       })
       .then((result) => {
-        return result[`${this.getName()}${compiledQuery}`];
+        return result.data[`${this.getName()}${compiledQuery}`];
       });
   }
 
@@ -278,4 +298,5 @@ export interface IQueryOptionsInput {
   };
   limit?: number;
   skip?: number;
+  sideBody?: QueryBodyType;
 }
