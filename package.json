@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@kaviar/ejson": "^1.2.0",
-    "@kaviar/smart": "^1.0.0",
+    "@kaviar/smart": "^1.2.3",
     "@types/mongodb": "^3.6.3",
     "@types/react-test-renderer": "^16.9.3",
     "history": "^4.10.1",
@@ -43,7 +43,7 @@
   "devDependencies": {
     "@apollo/client": "^3.2.1",
     "@kaviar/core": "^1.1.1",
-    "@kaviar/smart": "^1.1.0",
+    "@kaviar/smart": "^1.2.3",
     "@types/chai": "^4.2.3",
     "@types/chai-as-promised": "^7.1.2",
     "@types/graphql": "^0.11.3",
