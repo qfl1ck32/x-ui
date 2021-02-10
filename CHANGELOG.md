@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.2.0
+
+- Added more robust configuration over ApolloClient creation
+- Introduced Security Features with Guardian
+
 ## 1.1.0
 
 - Added live features and typesafety
