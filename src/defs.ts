@@ -5,9 +5,15 @@ import {
   ApolloClient,
   ApolloClientOptions,
 } from "@apollo/client/core";
+import { GuardianSmart } from "./react";
+import { Constructor } from "@kaviar/core";
+import { INewSmartOptions } from "@kaviar/smart";
 
 export interface IXUIBundleConfig {
   graphql: Partial<ApolloClientOptions<any>>;
+  guardianClass: Constructor<GuardianSmart>;
+  guardianClassOptions?: INewSmartOptions;
+  enableSubscriptions: boolean;
   react: {
     components: {
       notFound: React.ComponentType<any>;

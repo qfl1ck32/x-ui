@@ -9,6 +9,8 @@ import { ContainerContext } from "../XUIProvider";
 import { XRouter } from "../XRouter";
 import { use } from "./use";
 import { useSubscription, useCollectionSubscription } from "./useSubscription";
+import { GuardianSmart } from "../smarts/GuardianSmart";
+import { useSmart } from "../smart";
 
 export { use, useSubscription, useCollectionSubscription };
 
@@ -36,4 +38,8 @@ export const useListener = (
       manager.removeListener(eventClass, listener);
     };
   }, []);
+};
+
+export const useGuardian = (): GuardianSmart => {
+  return useSmart(GuardianSmart);
 };

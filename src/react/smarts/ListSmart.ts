@@ -2,9 +2,9 @@ import {
   QueryBodyType,
   IQueryOptions,
   MongoFilterQuery,
-} from "../graphql/defs";
+} from "../../graphql/defs";
 import { Constructor, ContainerInstance, Inject } from "@kaviar/core";
-import { Collection } from "../graphql/Collection";
+import { Collection } from "../../graphql/Collection";
 import { newSmart, Smart } from "@kaviar/smart";
 
 //
@@ -204,6 +204,9 @@ export abstract class ListSmart<T = any> extends Smart<
         ...this.initialFilters,
       },
     });
+    // We ensure that the first page is displayed, this is done because if he is on page 5
+    // And the filters only have 2 pages. It will display no data.
+    this.setCurrentPage(1, { load: false });
     this.load({
       count: true,
     });
