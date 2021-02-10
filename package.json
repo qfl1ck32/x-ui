@@ -1,6 +1,6 @@
 {
   "name": "@kaviar/x-ui",
-  "version": "1.1.8",
+  "version": "1.2.0",
   "private": false,
   "description": "X-UI represents a set of standards to build scalable UI using X-way by Kaviar",
   "main": "dist/index.js",
@@ -25,7 +25,6 @@
   "dependencies": {
     "@kaviar/ejson": "^1.2.0",
     "@types/mongodb": "^3.6.3",
-    "@types/react-test-renderer": "^16.9.3",
     "history": "^4.10.1",
     "json-to-graphql-query": "^2.0.0",
     "query-string": "^6.13.2",
@@ -36,8 +35,7 @@
     "@apollo/client": "^3.2.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
-    "react-router-dom": "^5.0.0",
-    "@types/react-router-dom": "^5.0.0"
+    "react-router-dom": "^5.0.0"
   },
   "devDependencies": {
     "@apollo/client": "^3.2.1",
@@ -48,7 +46,7 @@
     "@types/graphql": "^0.11.3",
     "@types/jest": "^25.2.3",
     "@types/node": "^8.0.28",
-    "@types/react": "^17.0.0",
+    "@types/react": "^17.0.1",
     "@types/react-router-dom": "^5.1.5",
     "@typescript-eslint/eslint-plugin": "2.3.0",
     "@typescript-eslint/parser": "2.3.0",
@@ -65,7 +63,7 @@
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-router-dom": "^5.2.0",
-    "react-test-renderer": "^16.13.1",
+    "react-test-renderer": "^17.0.1",
     "source-map-support": "^0.5.13",
     "typedoc": "^0.19.0",
     "typescript": "^4.0.2"
