@@ -355,8 +355,23 @@ export class GuardianSmart<
       });
   }
 
-  hasRole(role: string): boolean {
-    return this.state.user?.roles?.includes(role);
+  hasRole(role: string | string[]): boolean {
+    const currentRoles = this.state.user?.roles;
+    if (!currentRoles) {
+      return false;
+    }
+    if (Array.isArray(role)) {
+      const roles = role;
+      for (const role in roles) {
+        if (currentRoles.includes(role)) {
+          return true;
+        }
+      }
+
+      return false;
+    }
+
+    return currentRoles.includes(role);
   }
 
   static getContext() {

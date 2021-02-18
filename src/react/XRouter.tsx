@@ -18,6 +18,7 @@ export class XRouter {
   }
 
   add(routes: AddRoutingArguments) {
+    // TODO: sanity check not to add after kernel initialisation
     for (const routeName in routes) {
       const route = {
         exact: true,

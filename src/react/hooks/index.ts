@@ -12,6 +12,8 @@ import { useSubscription, useCollectionSubscription } from "./useSubscription";
 import { GuardianSmart } from "../smarts/GuardianSmart";
 import { useSmart } from "../smart";
 
+// START OF EXPORTS
+export { useUIComponents } from "./useUIComponents";
 export { use, useSubscription, useCollectionSubscription };
 
 export const useContainer = (): ContainerInstance => {

@@ -8,18 +8,26 @@ import { setDefaults } from "@kaviar/smart";
 import { InMemoryCache } from "@apollo/client/core";
 
 import { IXUIBundleConfig } from "./defs";
-import { APOLLO_CLIENT_OPTIONS_TOKEN, XUI_CONFIG_TOKEN } from "./constants";
+import {
+  APOLLO_CLIENT_OPTIONS_TOKEN,
+  XUI_CONFIG_TOKEN,
+  XUI_COMPONENTS_TOKEN,
+} from "./constants";
 import { RoutingPreparationEvent } from "./events/RoutingPreparationEvent";
 import { XRouter } from "./react/XRouter";
 import { ApolloClient } from "./graphql/ApolloClient";
 import { GuardianSmart } from "./react/smarts/GuardianSmart";
+import { DefaultComponents, IComponents } from "./react/components/types";
 
 export class XUIBundle extends Bundle<IXUIBundleConfig> {
-  protected defaultConfig = {
+  protected defaultConfig: IXUIBundleConfig = {
     graphql: {},
     guardianClass: GuardianSmart,
-    guardianSmartOptions: {},
+    guardianClassOptions: {},
     enableSubscriptions: true,
+    react: {
+      components: DefaultComponents,
+    },
   };
 
   async hook() {
@@ -47,6 +55,7 @@ export class XUIBundle extends Bundle<IXUIBundleConfig> {
       }).restore((window as any).__APOLLO_STATE__ || {});
     }
 
+    this.container.set(XUI_COMPONENTS_TOKEN, this.config.react.components);
     this.container.set(XUI_CONFIG_TOKEN, this.config);
     this.container.set({
       id: APOLLO_CLIENT_OPTIONS_TOKEN,
@@ -61,5 +70,13 @@ export class XUIBundle extends Bundle<IXUIBundleConfig> {
         return container.get(targetType);
       },
     });
+  }
+
+  /**
+   * Use this in the prepare or init phase to update certain UI Components
+   * @param components
+   */
+  updateComponents(components: Partial<IComponents>) {
+    Object.assign(this.config.react.components, components);
   }
 }

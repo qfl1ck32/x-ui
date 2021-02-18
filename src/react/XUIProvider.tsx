@@ -10,18 +10,18 @@ import { XBrowserRouter } from "./XBrowserRouter";
 import { newSmart } from "./smart";
 import { GuardianSmart } from "./smarts/GuardianSmart";
 import { XUI_CONFIG_TOKEN } from "../constants";
+import { useUIComponents } from "./hooks/useUIComponents";
 
 export const ContainerContext = React.createContext<ContainerInstance>(null);
 ContainerContext.displayName = "KaviarContainer";
 
 export interface IXUIProviderProps {
   kernel: Kernel;
-  loading?: React.ReactElement<any>;
+  loading?: React.ComponentType<any>;
   children?: any;
-  guardianClass?: Constructor<GuardianSmart>;
 }
 
-export const XUIProvider = (props: IXUIProviderProps) => {
+export function XUIProvider(props: IXUIProviderProps) {
   const { kernel, children } = props;
   const [isInitialized, setIsInitialized] = useState(false);
 
@@ -38,7 +38,7 @@ export const XUIProvider = (props: IXUIProviderProps) => {
 
   if (!isInitialized) {
     if (props.loading) {
-      return props.loading;
+      return React.createElement(props.loading);
     } else {
       return null;
     }
@@ -51,28 +51,31 @@ export const XUIProvider = (props: IXUIProviderProps) => {
       </XUIProviderInitialised>
     </ContainerContext.Provider>
   );
-};
+}
 
 interface IXUIProviderInitialisedProps {
   children?: any;
   guardianClass?: Constructor<GuardianSmart>;
 }
 
-export const XUIProviderInitialised = ({
+export function XUIProviderInitialised({
   children,
   guardianClass,
-}: IXUIProviderInitialisedProps) => {
+}: IXUIProviderInitialisedProps) {
   const router = use(XRouter);
+  const UIComponents = useUIComponents();
   const xuiConfig = use(XUI_CONFIG_TOKEN);
   const graphqlClient = use(ApolloClient);
   const [guardian, GuardianProvider] = newSmart(xuiConfig.guardianClass);
 
   return (
-    <ApolloProvider client={graphqlClient}>
-      <GuardianProvider>
-        {children ? children : null}
-        <XBrowserRouter router={router} />
-      </GuardianProvider>
-    </ApolloProvider>
+    <UIComponents.ErrorBoundary>
+      <ApolloProvider client={graphqlClient}>
+        <GuardianProvider>
+          {children ? children : null}
+          <XBrowserRouter router={router} />
+        </GuardianProvider>
+      </ApolloProvider>
+    </UIComponents.ErrorBoundary>
   );
-};
+}

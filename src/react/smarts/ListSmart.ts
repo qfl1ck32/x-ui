@@ -92,6 +92,9 @@ export abstract class ListSmart<T = any> extends Smart<
     }
 
     this.config = config;
+    if (config.perPage) {
+      this.state.perPage = config.perPage;
+    }
   }
 
   async init() {
@@ -233,8 +236,8 @@ export abstract class ListSmart<T = any> extends Smart<
    */
   protected getPaginationOptions(): IQueryOptions<T> {
     const options: IQueryOptions = {};
-    if (this.config.perPage > 0) {
-      options.limit = this.config.perPage;
+    if (this.state.perPage > 0) {
+      options.limit = this.state.perPage;
       options.skip = (this.state.currentPage - 1) * options.limit;
     }
 
@@ -253,10 +256,10 @@ export abstract class ListSmart<T = any> extends Smart<
   }
 
   get pageCount() {
-    if (!this.config.perPage) {
+    if (!this.state.perPage) {
       return 1;
     }
 
-    return Math.ceil(this.state.totalCount / this.config.perPage);
+    return Math.ceil(this.state.totalCount / this.state.perPage);
   }
 }
