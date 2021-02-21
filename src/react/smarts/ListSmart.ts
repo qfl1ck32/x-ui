@@ -124,7 +124,7 @@ export abstract class ListSmart<T = any> extends Smart<
             ...this.getPaginationOptions(),
           },
         },
-        this.body
+        this.getBody()
       )
       .then((documents) => {
         this.updateState({
@@ -227,7 +227,7 @@ export abstract class ListSmart<T = any> extends Smart<
     this.load();
   }
 
-  getBody(): QueryBodyType {
+  getBody(): QueryBodyType<T> {
     return this.body;
   }
 

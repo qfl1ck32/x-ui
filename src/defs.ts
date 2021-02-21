@@ -38,6 +38,8 @@ export interface IRouteGenerationProps<T = any, Q = any> {
   query?: Q;
 }
 
+export type UserRolesType = "anonymous" | string[];
+
 export interface IRouteParams {
   [key: string]: string | number;
 }

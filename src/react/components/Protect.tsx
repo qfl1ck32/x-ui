@@ -3,12 +3,13 @@ import { useGuardian } from "../hooks";
 import { Loading } from "./Loading";
 import { NotAuthorized } from "./NotAuthorized";
 import { useUIComponents } from "../hooks/useUIComponents";
+import { UserRolesType } from "../../defs";
 
 export type ProtectProps = {
   /**
    * If you don't specify any roles it will ensure that the user is logged in.
    */
-  roles?: string[];
+  roles?: UserRolesType;
   component?: React.ComponentType<any>;
   componentProps?: AnyProps;
   children?: any;
@@ -27,9 +28,10 @@ export function Protect(props: ProtectProps) {
     return <Loading />;
   }
 
-  const shouldRender = roles
-    ? guardian.hasRole(roles)
-    : guardian.state.isLoggedIn;
+  let shouldRender = true;
+  if (roles !== "anonymous") {
+    shouldRender = roles ? guardian.hasRole(roles) : guardian.state.isLoggedIn;
+  }
 
   if (shouldRender) {
     if (props.children) {
