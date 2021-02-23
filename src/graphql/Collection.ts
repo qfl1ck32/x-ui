@@ -74,16 +74,10 @@ export abstract class Collection<T = any> {
     const map = this.getTransformMap();
 
     for (const value of values) {
-      if (
-        map["_id"] === undefined &&
-        value["_id"] &&
-        typeof value["_id"] === "string"
-      ) {
-        value["_id"] = new ObjectId(value["_id"]);
-      }
-
       for (const field in map) {
-        value[field] = map[field](value[field]);
+        if (value[field] !== undefined) {
+          value[field] = map[field](value[field]);
+        }
       }
     }
 
