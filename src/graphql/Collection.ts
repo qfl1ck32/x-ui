@@ -205,7 +205,9 @@ export abstract class Collection<T = any> {
    */
   async count(filters: any): Promise<number> {
     return this.runCompiledQuery("Count", {
-      filters: EJSON.stringify(filters),
+      query: {
+        filters: EJSON.stringify(filters),
+      },
     });
   }
 
