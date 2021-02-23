@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.4.0
+
+- Counting now works by sending query: { filters } instead of filters directly.
+
 ## 1.3.0
 
 - Added Guardian

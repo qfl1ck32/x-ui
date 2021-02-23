@@ -352,8 +352,8 @@ export abstract class Collection<T = any> {
     this.compiled.set(
       "Count",
       gql`
-        query ${this.getName()}Count($filters: EJSON!) {
-          ${this.getName()}Count(filters: $filters)
+        query ${this.getName()}Count($query: QueryInput) {
+          ${this.getName()}Count(query: $query)
         }
       `
     );
