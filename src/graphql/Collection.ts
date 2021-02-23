@@ -1,13 +1,28 @@
-import { Service, Inject } from "@kaviar/core";
+import { Service, Inject, ContainerInstance, Constructor } from "@kaviar/core";
 import { jsonToGraphQLQuery, VariableType } from "json-to-graphql-query";
 import { ApolloClient } from "./ApolloClient";
 import { gql, DocumentNode, FetchPolicy } from "@apollo/client/core";
 import { EJSON, ObjectId } from "@kaviar/ejson";
-import { IEventsMap, QueryBodyType } from "./defs";
+import { IEventsMap, MongoFilterQuery, QueryBodyType } from "./defs";
 import { UpdateQuery } from "mongodb";
 import { getSideBody } from "./utils/getSideBody";
 
 type CompiledQueriesTypes = "Count" | "InsertOne" | "UpdateOne" | "DeleteOne";
+
+type TransformPartial<T> = Partial<{ [key in keyof T]: any }>;
+
+export type CollectionTransformMap<T> = Partial<
+  {
+    [key in keyof T]: (value) => any;
+  }
+>;
+
+export type CollectionLinkConfig<T> = {
+  collection: (container) => Constructor<Collection>;
+  name: keyof T;
+  many?: boolean;
+  field?: keyof T;
+};
 
 @Service()
 export abstract class Collection<T = any> {
@@ -15,12 +30,84 @@ export abstract class Collection<T = any> {
 
   constructor(
     @Inject(() => ApolloClient)
-    protected readonly apolloClient: ApolloClient
+    protected readonly apolloClient: ApolloClient,
+    @Inject()
+    protected readonly container: ContainerInstance
   ) {
     this.setupQueries();
   }
 
   abstract getName(): string;
+
+  /**
+   * Returns a simple map, and for each field you provide a function which transforms it
+   */
+  getTransformMap(): CollectionTransformMap<T> {
+    return {};
+  }
+
+  /**
+   * Returns the relations it has with other classes. Might mimick the server, but not necessarily.
+   */
+  getLinks(): CollectionLinkConfig<T>[] {
+    return [];
+  }
+
+  /**
+   * Transforms the document based on getTransformMap() and getLinks()
+   * @param values
+   */
+  transform(values: TransformPartial<T> | TransformPartial<T>[]) {
+    if (!Array.isArray(values)) {
+      values = [values];
+    }
+
+    this.doTransform(values);
+  }
+
+  /**
+   * This does the transformation by reading the transform map and also reading through fields
+   * We decided to work with arrays to mitigate ContainerInstance abuse when dealing with many documents and relations
+   * @param values
+   */
+  protected doTransform(values: TransformPartial<T>[]): void {
+    const map = this.getTransformMap();
+
+    for (const value of values) {
+      if (
+        map["_id"] === undefined &&
+        value["_id"] &&
+        typeof value["_id"] === "string"
+      ) {
+        value["_id"] = new ObjectId(value["_id"]);
+      }
+
+      for (const field in map) {
+        value[field] = map[field](value[field]);
+      }
+    }
+
+    for (const relation of this.getLinks()) {
+      const collection = this.container.get(
+        relation.collection(this.container)
+      );
+
+      for (const value of values) {
+        if (value[relation.field]) {
+          if (relation.many) {
+            value[relation.field] = value[relation.field].map(
+              (v) => new ObjectId(v)
+            );
+          } else {
+            value[relation.field] = new ObjectId(value[relation.field]);
+          }
+        }
+        if (value[relation.name]) {
+          collection.transform(value[relation.name]);
+        }
+      }
+    }
+  }
 
   /**
    * Insert a single document into the remote database
@@ -186,7 +273,10 @@ export abstract class Collection<T = any> {
         fetchPolicy: this.getFetchPolicy(),
       })
       .then((result) => {
-        return result.data[operationName];
+        const data = JSON.parse(JSON.stringify(result.data[operationName]));
+        this.transform(data);
+
+        return data;
       });
   }
 
@@ -274,14 +364,16 @@ export abstract class Collection<T = any> {
   }
 }
 
-export interface IQueryInput {
+export interface IQueryInput<T = null> {
   /**
    * MongoDB Filters
    * @url https://docs.mongodb.com/manual/reference/operator/query/
    */
-  filters?: {
-    [key: string]: any;
-  };
+  filters?: T extends null
+    ? {
+        [key: string]: any;
+      }
+    : MongoFilterQuery<T>;
   /**
    * MongoDB Options
    */

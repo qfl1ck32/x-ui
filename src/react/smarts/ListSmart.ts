@@ -200,12 +200,13 @@ export abstract class ListSmart<T = any> extends Smart<
     });
   }
 
+  /**
+   * Updates the current filters. Does not override the initial filters set in this smart.
+   * @param filters
+   */
   setFilters(filters: MongoFilterQuery<T>) {
     this.updateState({
-      filters: {
-        ...filters,
-        ...this.initialFilters,
-      },
+      filters,
     });
     // We ensure that the first page is displayed, this is done because if he is on page 5
     // And the filters only have 2 pages. It will display no data.

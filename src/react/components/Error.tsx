@@ -6,5 +6,5 @@ export type ErrorProps = {
 };
 
 export function Error(props: ErrorProps) {
-  return <div>You spin me round round baby round round</div>;
+  return <div>An error occured. {props.error.toString()}</div>;
 }

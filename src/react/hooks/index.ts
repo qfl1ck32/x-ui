@@ -15,6 +15,7 @@ import { useSmart } from "../smart";
 // START OF EXPORTS
 export { useUIComponents } from "./useUIComponents";
 export { use, useSubscription, useCollectionSubscription };
+export { useData, useDataOne } from "./useData";
 
 export const useContainer = (): ContainerInstance => {
   return useContext(ContainerContext);

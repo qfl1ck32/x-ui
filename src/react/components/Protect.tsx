@@ -24,7 +24,7 @@ export function Protect(props: ProtectProps) {
   const guardian = useGuardian();
   const UIComponents = useUIComponents();
 
-  if (!guardian.state.initialised) {
+  if (!guardian.state.initialised || guardian.state.fetchingUserData) {
     return <Loading />;
   }
 

@@ -43,5 +43,3 @@ export type UserRolesType = "anonymous" | string[];
 export interface IRouteParams {
   [key: string]: string | number;
 }
-
-// query?
