@@ -23,7 +23,7 @@
     "gen-doc": "typedoc ./src/index.ts --exclude ./src/__tests__ --out typeDocs --tsconfig tsconfig.json"
   },
   "dependencies": {
-    "@kaviar/ejson": "^1.2.0",
+    "@kaviar/ejson": "^1.2.3",
     "@types/mongodb": "^3.6.3",
     "history": "^4.10.1",
     "json-to-graphql-query": "^2.0.0",
@@ -32,6 +32,7 @@
   },
   "peerDependencies": {
     "@kaviar/core": "^1.1.1",
+    "@kaviar/ejson": "^1.2.3",
     "@apollo/client": "^3.2.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
@@ -39,6 +40,7 @@
   },
   "devDependencies": {
     "@apollo/client": "^3.2.1",
+    "@kaviar/ejson": "^1.2.3",
     "@kaviar/core": "^1.1.1",
     "@kaviar/smart": "^1.2.4",
     "@types/chai": "^4.2.3",
