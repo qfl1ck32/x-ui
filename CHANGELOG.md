@@ -1,5 +1,12 @@
 # Change Log
 
+## 1.3.0
+
+- Added Guardian
+- Added useData() for collection easy fetching
+- Added transform capabilities to Collection
+- Added UIComponents strategy to re-use components
+
 ## 1.2.0
 
 - Added more robust configuration over ApolloClient creation
