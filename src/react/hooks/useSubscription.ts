@@ -55,3 +55,17 @@ export function useCollectionSubscription<T>(
 
   return [dataSet, isReady];
 }
+
+export function useCollectionSubscriptionOne<T>(
+  collectionClass: Constructor<Collection<T>>,
+  body: QueryBodyType<T>,
+  options: ISubscriptionOptions = {}
+): [T, boolean] {
+  const [dataSet, isReady] = useCollectionSubscription(
+    collectionClass,
+    body,
+    options
+  );
+
+  return [dataSet && dataSet.length ? dataSet[0] : null, isReady];
+}

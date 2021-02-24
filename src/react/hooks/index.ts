@@ -8,13 +8,22 @@ import { useContext, useEffect } from "react";
 import { ContainerContext } from "../XUIProvider";
 import { XRouter } from "../XRouter";
 import { use } from "./use";
-import { useSubscription, useCollectionSubscription } from "./useSubscription";
+import {
+  useSubscription,
+  useCollectionSubscription,
+  useCollectionSubscriptionOne,
+} from "./useSubscription";
 import { GuardianSmart } from "../smarts/GuardianSmart";
 import { useSmart } from "../smart";
 
 // START OF EXPORTS
 export { useUIComponents } from "./useUIComponents";
-export { use, useSubscription, useCollectionSubscription };
+export {
+  use,
+  useSubscription,
+  useCollectionSubscription,
+  useCollectionSubscriptionOne,
+};
 export { useData, useDataOne } from "./useData";
 
 export const useContainer = (): ContainerInstance => {

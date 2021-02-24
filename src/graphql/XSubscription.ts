@@ -44,7 +44,8 @@ export class XSubscription<T extends { _id: any }> {
         : (message.document as T);
 
     if (message.event === SubscriptionEvents.ADDED) {
-      this.dataSet.push(document);
+      this.dataSet = [...this.dataSet, document];
+
       if (this.eventsMap.onAdded) {
         this.eventsMap.onAdded(document);
       }
@@ -54,13 +55,17 @@ export class XSubscription<T extends { _id: any }> {
     }
     if (message.event === SubscriptionEvents.CHANGED) {
       const { _id, ...changeSet } = document;
-      const oldDocument = this.dataSet.find((doc) => {
-        return doc._id.toString() === document._id.toString();
+      let oldDocument = {};
+
+      this.dataSet = this.dataSet.map((currentDoc) => {
+        if (currentDoc._id.toString() === _id.toString()) {
+          oldDocument = Object.assign({}, currentDoc);
+          return Object.assign({}, currentDoc, changeSet);
+        }
+
+        return currentDoc;
       });
 
-      Object.assign({}, oldDocument, {
-        ...document,
-      });
       this.updateReactState();
       if (this.eventsMap.onChanged) {
         this.eventsMap.onChanged(document, changeSet, oldDocument);
