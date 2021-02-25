@@ -1,6 +1,6 @@
 {
   "name": "@kaviar/x-ui",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "private": false,
   "description": "X-UI represents a set of standards to build scalable UI using X-way by Kaviar",
   "main": "dist/index.js",
