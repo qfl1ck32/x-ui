@@ -115,11 +115,11 @@ export class GuardianSmart<
             `[Authentication] There was an error fetching the user: ${err.toString()}`
           );
           // this.storeToken(null);
-          // this.updateState({
-          //   hasInvalidToken: true,
-          //   fetchingUserData: false,
-          //   isLoggedIn: false,
-          // });
+          this.updateState({
+            // hasInvalidToken: true,
+            fetchingUserData: false,
+            // isLoggedIn: false,
+          });
         });
     }
   }
