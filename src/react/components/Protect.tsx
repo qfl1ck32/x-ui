@@ -1,7 +1,5 @@
 import * as React from "react";
 import { useGuardian } from "../hooks";
-import { Loading } from "./Loading";
-import { NotAuthorized } from "./NotAuthorized";
 import { useUIComponents } from "../hooks/useUIComponents";
 import { UserRolesType } from "../../defs";
 
@@ -25,7 +23,7 @@ export function Protect(props: ProtectProps) {
   const UIComponents = useUIComponents();
 
   if (!guardian.state.initialised || guardian.state.fetchingUserData) {
-    return <Loading />;
+    return <UIComponents.Loading />;
   }
 
   let shouldRender = true;
