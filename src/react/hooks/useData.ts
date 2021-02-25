@@ -59,9 +59,6 @@ export function useDataOne<T>(
   // options: QueryOp = {},
 ): UseDataStateType<Partial<T>> {
   const filters = { _id };
-  if (typeof _id === "string") {
-    filters._id = new ObjectId(_id);
-  }
   const collection = use(collectionClass);
   const [dataState, setDataState] = useState<UseDataStateType<Partial<T>>>({
     data: null,
