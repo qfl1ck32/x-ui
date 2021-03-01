@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.4.5
+
+- Added useLiveData() with the same argument signature as useData() (same for One)
+
 ## 1.4.0
 
 - Counting now works by sending query: { filters } instead of filters directly.
