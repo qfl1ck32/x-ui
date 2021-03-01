@@ -17,6 +17,9 @@ export class XSubscription<T extends { _id: any }> {
     protected readonly eventsMap: IEventsMap
   ) {
     this.subscriptionHandler = observable.subscribe({
+      error(err) {
+        eventsMap.onError && eventsMap.onError(err);
+      },
       next: (value: any) => {
         if (value?.data) {
           const message = Object.values(

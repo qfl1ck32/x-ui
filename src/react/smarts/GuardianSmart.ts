@@ -10,7 +10,7 @@ import {
   AuthenticationTokenUpdateEvent,
 } from "../../events";
 
-type State<UserType = DefaultUserType> = {
+type State<UserType = GuardianUserType> = {
   /**
    * This represents the fact that we're currently fetching for the user data
    */
@@ -37,7 +37,7 @@ interface IUserMandatory {
   roles: string[];
 }
 
-type DefaultUserType = {
+export type GuardianUserType = {
   _id: string | object | number;
   profile: {
     firstName: string;
@@ -47,7 +47,7 @@ type DefaultUserType = {
   email: string;
 };
 
-type DefaultUserRegistrationType = {
+export type GuardianUserRegistrationType = {
   firstName: string;
   lastName: string;
   email: string;
@@ -55,8 +55,8 @@ type DefaultUserRegistrationType = {
 };
 
 export class GuardianSmart<
-  TUserType extends IUserMandatory = DefaultUserType,
-  TUserRegistrationType = DefaultUserRegistrationType
+  TUserType extends IUserMandatory = GuardianUserType,
+  TUserRegistrationType = GuardianUserRegistrationType
 > extends Smart<State<TUserType>, any> {
   protected authenticationToken: string;
 

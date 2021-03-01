@@ -31,8 +31,7 @@ export function useSubscription<T>(
 }
 
 /**
- * Starts the subscription and inteligently re-uses it
- * @param observable
+ * @deprecated
  */
 export function useCollectionSubscription<T>(
   collectionClass: Constructor<Collection<T>>,
@@ -56,6 +55,9 @@ export function useCollectionSubscription<T>(
   return [dataSet, isReady];
 }
 
+/**
+ * @deprecated
+ */
 export function useCollectionSubscriptionOne<T>(
   collectionClass: Constructor<Collection<T>>,
   body: QueryBodyType<T>,

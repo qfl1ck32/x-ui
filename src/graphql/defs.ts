@@ -12,6 +12,7 @@ export interface ISubscriptionEventMessage {
 }
 export interface IEventsMap {
   onReady?: () => void;
+  onError?: (err: any) => void;
   onChanged?: (document: any, changeSet: any, previousDocument: any) => void;
   onRemoved?: (document: any) => void;
   onAdded?: (document: any) => void;

@@ -23,7 +23,6 @@ export class XUIBundle extends Bundle<IXUIBundleConfig> {
   protected defaultConfig: IXUIBundleConfig = {
     graphql: {},
     guardianClass: GuardianSmart,
-    guardianClassOptions: {},
     enableSubscriptions: true,
     react: {
       components: DefaultComponents,

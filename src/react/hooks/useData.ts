@@ -7,7 +7,7 @@ import { ObjectId } from "@kaviar/ejson";
 
 export type UseDataStateType<T> = {
   data: T | null;
-  error: string;
+  error: Error | null;
   isLoading: boolean;
 };
 
@@ -41,7 +41,7 @@ export function useData<T>(
         setDataState({
           data: null,
           isLoading: false,
-          error: err.toString(),
+          error: err,
         });
       });
   }, []);

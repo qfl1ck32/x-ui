@@ -13,7 +13,6 @@ import { IComponents } from "./react";
 export interface IXUIBundleConfig {
   graphql: Partial<ApolloClientOptions<any>>;
   guardianClass: Constructor<GuardianSmart>;
-  guardianClassOptions?: INewSmartOptions;
   enableSubscriptions: boolean;
   react: {
     components: IComponents;

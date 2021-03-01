@@ -25,6 +25,7 @@ export {
   useCollectionSubscriptionOne,
 };
 export { useData, useDataOne } from "./useData";
+export { useLiveData, useLiveDataOne } from "./useLiveData";
 
 export const useContainer = (): ContainerInstance => {
   return useContext(ContainerContext);
