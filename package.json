@@ -51,7 +51,7 @@
     "@types/react": "^17.0.2",
     "@types/react-router-dom": "^5.1.5",
     "@typescript-eslint/eslint-plugin": "2.3.0",
-    "@typescript-eslint/parser": "2.3.0",
+    "@typescript-eslint/parser": "4.16.1",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "cross-fetch": "^3.0.6",
