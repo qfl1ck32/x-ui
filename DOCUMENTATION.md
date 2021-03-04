@@ -65,7 +65,7 @@ import { Bundle } from "@kaviar/core";
 
 export class UIAppBundle extends Bundle {
   async init() {
-    const router = this.get<XRouter>(XRouter);
+    const router = this.container.get(XRouter);
 
     router.add({
       HOME: {
@@ -107,10 +107,12 @@ And now simply add them in your bundle like this:
 import * as Routes from "./routes";
 
 // The function from the Bundle
-async function init() {
-  const router = this.get<XRouter>(XRouter);
+class UIAppBundle extends Bundle {
+  async init() {
+    const router = this.container.get(XRouter);
 
-  router.add(Routes);
+    router.add(Routes);
+  }
 }
 ```
 
@@ -321,6 +323,43 @@ Counting documents is also easy:
 
 ```ts
 postsCollection.count(filters).then((count) => {});
+```
+
+### Transformers
+
+This will transform the fetched result however you prefer, you can either instantiate a class with it using something like `class-transformers` package, or just modify certain fields.
+
+What we normally recommend is do this for `_id` which are `ObjectId` and to transform numbers to `Date` for fields which are dates. Note it will only perform transformation if the response is not `undefined`.
+
+```ts
+import { ObjectId } from "@kaviar/ejson";
+
+class PostsCollection extends Collection<Post> {
+  getTransformMap() {
+    return {
+      _id: (v) => new ObjectId(v),
+      tagIds: (v) => v.map((v) => new ObjectId()),
+      createdAt: (v) => new Date(v),
+    };
+  }
+}
+```
+
+To be able to perform deep transformation when fetching elements with relations, we need to define the links:
+
+```ts
+class PostsCollection extends Collection<Post> {
+  getLinks() {
+    return [
+      {
+        name: "tags",
+        collection: () => TagsCollection,
+        many: true, // use false or omit for single relationships
+        field: "tagIds", // if you are dealing with an inversed relationship
+      },
+    ];
+  }
+}
 ```
 
 ### Mutations
