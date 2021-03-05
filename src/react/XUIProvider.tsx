@@ -17,7 +17,7 @@ ContainerContext.displayName = "KaviarContainer";
 
 export interface IXUIProviderProps {
   kernel: Kernel;
-  loading?: React.ComponentType<any>;
+  loadingComponent?: React.ComponentType<any>;
   children?: any;
 }
 
@@ -37,8 +37,8 @@ export function XUIProvider(props: IXUIProviderProps) {
   }, []);
 
   if (!isInitialized) {
-    if (props.loading) {
-      return React.createElement(props.loading);
+    if (props.loadingComponent) {
+      return React.createElement(props.loadingComponent);
     } else {
       return null;
     }
@@ -46,35 +46,40 @@ export function XUIProvider(props: IXUIProviderProps) {
 
   return (
     <ContainerContext.Provider value={kernel.container}>
-      <XUIProviderInitialised>
-        {children ? children : null}
-      </XUIProviderInitialised>
+      <XUIGuardian loadingComponent={props.loadingComponent}>
+        <XUIProviderInitialised />
+      </XUIGuardian>
     </ContainerContext.Provider>
   );
 }
 
-interface IXUIProviderInitialisedProps {
+export function XUIGuardian(props: {
+  loadingComponent?: React.ComponentType<any>;
   children?: any;
-  guardianClass?: Constructor<GuardianSmart>;
+}) {
+  const xuiConfig = use(XUI_CONFIG_TOKEN);
+  const [guardian, GuardianProvider] = newSmart(xuiConfig.guardianClass);
+
+  if (!guardian.state.initialised) {
+    // We want to prevent re-renders at page/route level due to guardian
+    // Not doing so, it may imply a re-render almost 4 times on every page load
+    return props.loadingComponent
+      ? React.createElement(props.loadingComponent)
+      : null;
+  }
+
+  return <GuardianProvider>{props.children}</GuardianProvider>;
 }
 
-export function XUIProviderInitialised({
-  children,
-  guardianClass,
-}: IXUIProviderInitialisedProps) {
+export function XUIProviderInitialised() {
   const router = use(XRouter);
   const UIComponents = useUIComponents();
-  const xuiConfig = use(XUI_CONFIG_TOKEN);
   const graphqlClient = use(ApolloClient);
-  const [guardian, GuardianProvider] = newSmart(xuiConfig.guardianClass);
 
   return (
     <UIComponents.ErrorBoundary>
       <ApolloProvider client={graphqlClient}>
-        <GuardianProvider>
-          {children ? children : null}
-          <XBrowserRouter router={router} />
-        </GuardianProvider>
+        <XBrowserRouter router={router} />
       </ApolloProvider>
     </UIComponents.ErrorBoundary>
   );
