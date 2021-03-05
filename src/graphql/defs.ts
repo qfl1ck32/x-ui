@@ -46,11 +46,6 @@ type BodyCustomise<T = null> = {
   $?: ICollectionQueryConfig<T>;
 };
 
-type SubBodyCustomise<T = null> = {
-  $?: ICollectionQueryConfig<T>;
-  $alias?: string;
-};
-
 type SimpleFieldValue =
   | 1
   | number
@@ -65,27 +60,22 @@ type SimpleFieldValue =
   | {
       $filter: any;
     };
-// Nested field specification
-// | {
-//     [key: string]: SimpleFieldValue;
-//   };
 
 type Unpacked<T> = T extends (infer U)[] ? U : T;
 
-export type AnyBody = {
+type AnyBody = {
   [key: string]: SimpleFieldValue | ICollectionQueryConfig | AnyBody;
 };
 
 type RootSpecificBody<T> = {
   [K in keyof T]?:
-    | T[K]
     | SimpleFieldValue
     // We do this because the type might be an array
-    | QuerySubBodyType<T[K] extends Array<any> ? Unpacked<T[K]> : T[K]>;
+    | QuerySubBodyType<Unpacked<T[K]>>;
 };
 
 export type QueryBodyType<T = null> = BodyCustomise<T> &
   (T extends null ? AnyBody : RootSpecificBody<T>);
 
-export type QuerySubBodyType<T = null> = SubBodyCustomise<T> &
+export type QuerySubBodyType<T = null> = BodyCustomise<T> &
   (T extends null ? AnyBody : RootSpecificBody<T>);

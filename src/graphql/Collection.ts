@@ -227,7 +227,7 @@ export abstract class Collection<T = any> {
   protected hybridFind(
     single: boolean,
     queryInput: IQueryInput,
-    body: object
+    body: QueryBodyType
   ): Promise<any> {
     const operationName = this.getName() + (single ? "FindOne" : "Find");
 
