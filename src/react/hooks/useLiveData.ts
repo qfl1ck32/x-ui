@@ -31,7 +31,7 @@ export function useLiveData<T>(
   useEffect(() => {
     const newBody = Object.assign({}, body);
     newBody.$ = Object.assign({}, newBody.$);
-    Object.assign(newBody, queryOptions);
+    Object.assign(newBody.$, queryOptions);
 
     // const body = queryOptions.
     const observable = collection.subscribe(newBody, subscriptionOptions);
