@@ -31,17 +31,17 @@
     "subscriptions-transport-ws": "^0.9.18"
   },
   "peerDependencies": {
+    "@apollo/client": "^3.2.1",
     "@kaviar/core": "^1.1.1",
     "@kaviar/ejson": "^1.2.3",
-    "@apollo/client": "^3.2.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-router-dom": "^5.0.0"
   },
   "devDependencies": {
     "@apollo/client": "^3.2.1",
-    "@kaviar/ejson": "^1.2.3",
     "@kaviar/core": "^1.1.1",
+    "@kaviar/ejson": "^1.2.3",
     "@kaviar/smart": "^1.2.4",
     "@types/chai": "^4.2.3",
     "@types/chai-as-promised": "^7.1.2",
@@ -67,7 +67,6 @@
     "react-router-dom": "^5.2.0",
     "react-test-renderer": "^17.0.1",
     "source-map-support": "^0.5.13",
-    "typedoc": "^0.19.0",
     "typescript": "^4.0.2"
   },
   "typings": "dist/index.d.ts",
