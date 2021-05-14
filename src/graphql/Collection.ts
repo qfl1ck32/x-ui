@@ -74,6 +74,9 @@ export abstract class Collection<T = any> {
     const map = this.getTransformMap();
 
     for (const value of values) {
+      if (!value) {
+        continue;
+      }
       for (const field in map) {
         if (value[field] !== undefined) {
           value[field] = map[field](value[field]);
@@ -87,6 +90,9 @@ export abstract class Collection<T = any> {
       );
 
       for (const value of values) {
+        if (!value) {
+          continue;
+        }
         if (value[relation.field]) {
           if (relation.many) {
             value[relation.field] = value[relation.field].map(
