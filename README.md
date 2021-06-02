@@ -9,7 +9,7 @@
   </a>
 </p>
 
-This is the X-way of handling password authentication blended with GraphQL.
+This is the X-Framework of handling password authentication blended with GraphQL.
 
 ## Install
 

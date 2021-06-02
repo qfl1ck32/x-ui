@@ -44,7 +44,7 @@ export function useData<T>(
           error: err,
         });
       });
-  }, []);
+  }, [JSON.stringify(queryOptions)]);
 
   return dataState;
 }
@@ -83,7 +83,7 @@ export function useDataOne<T>(
           isLoading: false,
         });
       });
-  }, []);
+  }, [JSON.stringify(filters)]);
 
   return dataState;
 }
