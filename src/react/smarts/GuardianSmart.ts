@@ -363,15 +363,9 @@ export class GuardianSmart<
     if (!currentRoles) {
       return false;
     }
-    if (Array.isArray(role)) {
-      const roles = role;
-      for (const role in roles) {
-        if (currentRoles.includes(role)) {
-          return true;
-        }
-      }
 
-      return false;
+    if (Array.isArray(role)) {
+      return role.some((_role) => currentRoles.includes(_role));
     }
 
     return currentRoles.includes(role);
