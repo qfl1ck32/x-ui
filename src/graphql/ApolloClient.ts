@@ -24,9 +24,12 @@ export class ApolloClient extends BaseApolloClient<any> {
     @Inject(XUI_CONFIG_TOKEN)
     xuiConfig: IXUIBundleConfig
   ) {
-    const { finalLink, subscriptionClient } = createApolloLink(options.uri, {
-      subscriptions: xuiConfig.enableSubscriptions,
-    });
+    const { finalLink, subscriptionClient } = createApolloLink(
+      options.uri as string,
+      {
+        subscriptions: xuiConfig.enableSubscriptions,
+      }
+    );
 
     super({
       link: finalLink,
