@@ -1,4 +1,5 @@
-import { split, HttpLink, ApolloLink } from "@apollo/client";
+import { split, ApolloLink } from "@apollo/client";
+import { createUploadLink } from "apollo-upload-client";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { SubscriptionClient } from "subscriptions-transport-ws";
@@ -27,7 +28,7 @@ type CreateLinkOptions = {
 };
 
 export function createApolloLink(
-  uri,
+  uri: string,
   options: CreateLinkOptions = {
     subscriptions: true,
   }
@@ -37,10 +38,13 @@ export function createApolloLink(
   wsLink?: WebSocketLink;
   subscriptionClient?: SubscriptionClient;
 } {
-  const httpLink = new HttpLink({
+  const uploadLink = createUploadLink({
     uri,
   });
-  const enhancedHttpLink = ApolloLink.concat(authenticationTokenLink, httpLink);
+  const enhancedHttpLink = ApolloLink.concat(
+    authenticationTokenLink,
+    uploadLink
+  );
 
   let wsLink = null,
     subscriptionClient = null,
