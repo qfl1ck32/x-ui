@@ -25,6 +25,7 @@
   "dependencies": {
     "@kaviar/ejson": "^1.2.3",
     "@types/mongodb": "^3.6.3",
+    "apollo-upload-client": "^16.0.0",
     "history": "^4.10.1",
     "json-to-graphql-query": "^2.0.0",
     "query-string": "^6.13.2",
@@ -43,6 +44,7 @@
     "@kaviar/core": "^1.1.1",
     "@kaviar/ejson": "^1.2.3",
     "@kaviar/smart": "^1.2.4",
+    "@types/apollo-upload-client": "^14.1.0",
     "@types/chai": "^4.2.3",
     "@types/chai-as-promised": "^7.1.2",
     "@types/graphql": "^0.11.3",
