@@ -75,7 +75,7 @@ export class GuardianSmart<
   eventManager: EventManager;
 
   async init() {
-    this.load()
+    return this.load()
       .then(() => {
         this.updateState({
           initialised: true,
@@ -196,8 +196,7 @@ export class GuardianSmart<
 
         // We await this as storing the token might be blocking
         await this.storeToken(token);
-        // This can be done in background
-        this.load();
+        await this.load();
 
         return token;
       });
