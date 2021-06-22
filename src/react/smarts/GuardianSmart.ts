@@ -101,7 +101,8 @@ export class GuardianSmart<
     });
     if (this.authenticationToken) {
       this.updateState({ fetchingUserData: true });
-      this.retrieveUser()
+
+      return this.retrieveUser()
         .then((user) => {
           this.updateState({
             user,
