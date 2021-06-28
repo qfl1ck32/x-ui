@@ -26,6 +26,7 @@ export {
 };
 export { useData, useDataOne } from "./useData";
 export { useLiveData, useLiveDataOne } from "./useLiveData";
+export { useUISession } from "./useUISession";
 
 export const useContainer = (): ContainerInstance => {
   return useContext(ContainerContext);

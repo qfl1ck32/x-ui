@@ -436,7 +436,11 @@ Integration with React is seamless and painless:
 import { useData, useLiveData, useDataOne, useLiveDataOne } from "@kaviar/x-ui";
 
 function PostsList() {
-  const { data: posts, isLoading, error } = useData(
+  const {
+    data: posts,
+    isLoading,
+    error,
+  } = useData(
     PostsCollection,
     {
       // Query options
@@ -459,11 +463,11 @@ function PostsList() {
 If you are expecting a single post, we also have an easy find by \_id solution:
 
 ```tsx
-const { data: post, isLoading, error } = useDataOne(
-  PostsCollection,
-  new ObjectId(props.id),
-  body
-);
+const {
+  data: post,
+  isLoading,
+  error,
+} = useDataOne(PostsCollection, new ObjectId(props.id), body);
 ```
 
 ## Live Data
@@ -474,7 +478,11 @@ If you want to use the smart live data, just swap `useData()` with `useLiveData(
 import { useLiveData } from "@kaviar/x-ui";
 
 const LiveDataPage = () => {
-  const { data: posts, isLoading, error } = useLiveData(
+  const {
+    data: posts,
+    isLoading,
+    error,
+  } = useLiveData(
     PostsCollection,
     {
       filters: {},
@@ -484,11 +492,11 @@ const LiveDataPage = () => {
   );
 
   // or single element
-  const { data: post, isLoading, error } = useLiveDataOne(
-    PostsCollection,
-    new ObjectId(id),
-    requestBody
-  );
+  const {
+    data: post,
+    isLoading,
+    error,
+  } = useLiveDataOne(PostsCollection, new ObjectId(id), requestBody);
 };
 ```
 
@@ -730,6 +738,76 @@ However if you want to extend the interface of `Guardian`, meaning you add other
 const appGuardian = (): AppGuardianSmart => {
   return useGuardian() as AppGuardianSmart;
 };
+```
+
+## useUISession
+
+useUISession is a hook that allows for handling sessions in a customized manner. The interface that defines the store of the session is the following:
+
+```ts
+interface IUISessionStore {
+  lastAuthenticationTime: number;
+}
+```
+
+The hook provides the following methods:
+
+```tsx
+get(key); // retrieves a key, e.g. get("lastAuthenticationTime");
+
+set(key, value); // sets a key to a value, e.g. set("lastAuthenticationTime", 0);
+
+onSet(key, (previousValue, newValue) => newValue); // adds a handler that is called on set(key, ...)
+// e.g. onSet("lastAuthenticationTime", (previousValue, newValue) => newValue + 1)
+
+onSetRemove(key); // removes the handler, e.g. onSetRemove("lastAuthenticationTime")
+```
+
+In order to extend the store and benefit of autocompletion, you have to extend the interface:
+
+```ts title="declarations.ts";
+import "@kaviar/x-ui";
+
+declare module "@kaviar/x-ui" {
+  export interface IUISessionStore {
+    csrfToken: string;
+  }
+}
+```
+
+When initialising `XUIBundle()`, you can pass session defaults:
+
+```ts title="kernel.ts";
+  export const kernel = new Kernel({
+    ...,
+    bundles: [
+      ...,
+      new XUIBundle({
+        sessionDefaults: {
+          csrfToken: null
+        }
+      })
+    ]
+  })
+```
+
+Simple example:
+
+```tsx
+import { useUISession, useGuardian } from "@kaviar/x-ui";
+
+function Component() {
+  const session = useUISession();
+  const guardian = useGuardian()
+
+  guardian
+    .login(...)
+    .then(() => {
+      session.set("lastAuthenticationTime", new Date().getTime() * 1000)
+    })
+
+  ...
+}
 ```
 
 ## Events

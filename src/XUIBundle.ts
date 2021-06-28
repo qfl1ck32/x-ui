@@ -27,6 +27,7 @@ export class XUIBundle extends Bundle<IXUIBundleConfig> {
     react: {
       components: DefaultComponents,
     },
+    sessionDefaults: {},
   };
 
   async hook() {

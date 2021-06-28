@@ -9,6 +9,7 @@ import { GuardianSmart } from "./react";
 import { Constructor } from "@kaviar/core";
 import { INewSmartOptions } from "@kaviar/smart";
 import { IComponents } from "./react";
+import { IUISessionStore } from "./react/hooks/useUISession";
 
 export interface IXUIBundleConfig {
   graphql: Partial<ApolloClientOptions<any>>;
@@ -17,6 +18,7 @@ export interface IXUIBundleConfig {
   react: {
     components: IComponents;
   };
+  sessionDefaults: Partial<IUISessionStore>;
 }
 
 export interface IRoute<T = IRouteParams, Q = IRouteParams> extends RouteProps {
