@@ -1,5 +1,5 @@
 import { Kernel } from "@kaviar/core";
-import { IUISessionStore } from "../react/hooks/useUISession";
+import { IUISessionStore } from "../react/services/UISession.service";
 import { XUIBundle } from "../XUIBundle";
 
 export const sessionDefaults = {

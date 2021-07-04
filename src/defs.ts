@@ -9,7 +9,7 @@ import { GuardianSmart } from "./react";
 import { Constructor } from "@kaviar/core";
 import { INewSmartOptions } from "@kaviar/smart";
 import { IComponents } from "./react";
-import { IUISessionStore } from "./react/hooks/useUISession";
+import { IUISessionStore } from "./react/services/UISession.service";
 
 export interface IXUIBundleConfig {
   graphql: Partial<ApolloClientOptions<any>>;

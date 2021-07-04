@@ -742,7 +742,9 @@ const appGuardian = (): AppGuardianSmart => {
 
 ## useUISession
 
-useUISession is a hook that allows for handling sessions in a customized manner. The interface that defines the store of the session is the following:
+useUISession is a hook that allows for handling sessions easily. You can persist the data to localStorage and add custom handlers on field change.
+
+The interface that defines the store is the following:
 
 ```ts
 interface IUISessionStore {
@@ -750,20 +752,7 @@ interface IUISessionStore {
 }
 ```
 
-The hook provides the following methods:
-
-```tsx
-get(key); // retrieves a key, e.g. get("lastAuthenticationTime");
-
-set(key, value); // sets a key to a value, e.g. set("lastAuthenticationTime", 0);
-
-onSet(key, (previousValue, newValue) => newValue); // adds a handler that is called on set(key, ...)
-// e.g. onSet("lastAuthenticationTime", (previousValue, newValue) => newValue + 1)
-
-onSetRemove(key); // removes the handler, e.g. onSetRemove("lastAuthenticationTime")
-```
-
-In order to extend the store and benefit of autocompletion, you have to extend the interface:
+In order to modify the interface and benefit of autocompletion, you have to extend it:
 
 ```ts title="declarations.ts";
 import "@kaviar/x-ui";
@@ -774,6 +763,48 @@ declare module "@kaviar/x-ui" {
   }
 }
 ```
+
+---
+
+The hook provides the following methods:
+
+```tsx
+get(fieldName);
+/*
+returns a hook - the result of a useState().
+e.g. const [time, setTime] = session.get("lastAuthenticationTime");
+*/
+
+set(fieldName, value, options);
+/*
+sets a field to a value, e.g. set("lastAuthenticationTime", 0);
+this function is async, if you want to wait for the handlers to run, you must use await.
+you will want to use `options` in order to persist data to localStorage.
+*/
+
+onSet(fieldName, handler);
+/*
+adds a handler that is called on set(fieldName, value);
+the handler must be an async function.
+*/
+
+onSetRemove(fieldName, handler);
+/*
+removes a handler that is attached to a field.
+e.g. onSetRemove("lastAuthenticationTime", handler);
+*/
+```
+
+Notes:
+
+1. For handlers, you'll want to declare them outside of a React component,
+   such that they won't change their memory address. Otherwise, you won't be able to remove them,
+   since onSetRemove identifies a handler by comparing functions, which is done on addresses.
+
+2. By default, the `setValue` method returned by `get(fieldName)` will only modify the state of the session,
+   without persisting it to localStorage. For this, you'll want to use `session.set(fieldName, value, { persist: true })`.
+
+---
 
 When initialising `XUIBundle()`, you can pass session defaults:
 
@@ -798,15 +829,26 @@ import { useUISession, useGuardian } from "@kaviar/x-ui";
 
 function Component() {
   const session = useUISession();
-  const guardian = useGuardian()
+  const guardian = useGuardian();
 
-  guardian
-    .login(...)
-    .then(() => {
-      session.set("lastAuthenticationTime", new Date().getTime() * 1000)
-    })
+  const [lastAuthenticationTime, setLastAuthenticationTime] = session.get(
+    "lastAuthenticationTime"
+  );
 
-  ...
+  const onSubmit = () => {
+    guardian.login(username, password).then(() => {
+      session.set("lastAuthenticationTime", new Date().getTime() * 1000, {
+        persist: true,
+      });
+    });
+  };
+
+  return (
+    <div>
+      {/* ...login form */}
+      Last authentication: {new Date(lastAuthenticationTime)}
+    </div>
+  );
 }
 ```
 

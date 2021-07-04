@@ -1,4 +1,4 @@
-import { IUISessionStore } from "../useUISession";
+import { IUISessionStore } from "../UISession.service";
 
 const localStorageKey = "kaviar-UISession";
 
