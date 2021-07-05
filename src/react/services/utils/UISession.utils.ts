@@ -1,17 +1,22 @@
+import { EJSON } from "@kaviar/ejson";
 import { IUISessionStore } from "../UISession.service";
-
-const localStorageKey = "kaviar-UISession";
-
-export const getLocalStorageState = (): Partial<IUISessionStore> =>
-  JSON.parse(localStorage.getItem(localStorageKey));
 
 export const updateLocalStorageState = <T extends keyof IUISessionStore>(
   key: T,
-  value: IUISessionStore[T]
+  value: IUISessionStore[T],
+  localStorageKey: string
 ): void => {
-  const newState = Object.assign(getLocalStorageState() || {}, {
+  const newState = Object.assign(getLocalStorageState(localStorageKey) || {}, {
     [key]: value,
   });
 
-  localStorage.setItem(localStorageKey, JSON.stringify(newState));
+  const stringifiedState = EJSON.stringify(newState);
+
+  localStorage.setItem(localStorageKey, stringifiedState);
+};
+
+export const getLocalStorageState = (
+  localStorageKey: string
+): Partial<IUISessionStore> => {
+  return EJSON.parse(localStorage.getItem(localStorageKey) || "{}");
 };

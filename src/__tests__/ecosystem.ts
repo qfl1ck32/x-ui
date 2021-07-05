@@ -1,10 +1,11 @@
 import { Kernel } from "@kaviar/core";
-import { IUISessionStore } from "../react/services/UISession.service";
+import { IUISessionDefaults } from "../react/services/UISession.service";
 import { XUIBundle } from "../XUIBundle";
 
 export const sessionDefaults = {
-  lastAuthenticationTime: new Date("03-01-2000 00:00:00").getTime(),
-} as IUISessionStore;
+  lastAuthenticationDate: new Date("03-01-2000 00:00:00"),
+  localStorageKey: "KAVIAR_UI_SESSION",
+} as IUISessionDefaults;
 
 export const kernel = new Kernel({
   parameters: {
@@ -12,7 +13,7 @@ export const kernel = new Kernel({
   },
   bundles: [
     new XUIBundle({
-      sessionDefaults,
+      session: sessionDefaults,
     }),
   ],
 });

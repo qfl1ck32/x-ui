@@ -27,7 +27,9 @@ export class XUIBundle extends Bundle<IXUIBundleConfig> {
     react: {
       components: DefaultComponents,
     },
-    sessionDefaults: {},
+    session: {
+      localStorageKey: "KAVIAR_SESSION",
+    },
   };
 
   async hook() {

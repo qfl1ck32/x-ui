@@ -1,9 +1,9 @@
 import { act, renderHook, RenderResult } from "@testing-library/react-hooks";
-import * as _ from "lodash";
 import * as React from "react";
 import { ContainerContext } from "..";
 import { useUISession } from "../react/hooks";
 import {
+  IUISessionHandler,
   IUISessionStore,
   UISession,
 } from "../react/services/UISession.service";
@@ -39,83 +39,85 @@ describe("useUISession", () => {
   test("sessionDefaults", () => {
     const sessionHook = getSessionHook();
 
-    expect(sessionHook.current.state).toStrictEqual(sessionDefaults);
+    const { localStorageKey: _, ...defaultState } = sessionDefaults;
+
+    expect(sessionHook.current.state).toStrictEqual(defaultState);
   });
 
   test("set and get", async () => {
     const sessionHook = getSessionHook();
 
-    const lastAuthenticationTime = new Date().getTime();
+    const lastAuthenticationDate = new Date();
 
     await act(
       async () =>
         await sessionHook.current.set(
-          "lastAuthenticationTime",
-          lastAuthenticationTime
+          "lastAuthenticationDate",
+          lastAuthenticationDate
         )
     );
 
-    const fieldHook = getFieldHook(sessionHook, "lastAuthenticationTime");
+    const fieldHook = getFieldHook(sessionHook, "lastAuthenticationDate");
 
-    expect(fieldHook.current[0]).toBe(lastAuthenticationTime);
+    expect(fieldHook.current).toStrictEqual(lastAuthenticationDate);
   });
 
   test("onSet and onSetRemove", async () => {
     const sessionHook = getSessionHook();
 
-    const lastAuthenticationTime = new Date().getTime();
+    const lastAuthenticationDate = new Date();
 
     let handlerIsCalled = false;
 
-    const handler = async (_: number, _2: number) => {
+    const handler: IUISessionHandler = async () => {
       handlerIsCalled = !handlerIsCalled;
     };
 
-    act(() => sessionHook.current.onSet("lastAuthenticationTime", handler));
+    act(() => sessionHook.current.onSet("lastAuthenticationDate", handler));
 
     await act(
       async () =>
         await sessionHook.current.set(
-          "lastAuthenticationTime",
-          lastAuthenticationTime
+          "lastAuthenticationDate",
+          lastAuthenticationDate
         )
     );
 
-    expect(handlerIsCalled).toBe(true);
+    expect(handlerIsCalled).toStrictEqual(true);
 
-    act(() =>
-      sessionHook.current.onSetRemove("lastAuthenticationTime", handler)
-    );
+    act(() => sessionHook.current.onSetRemove(handler));
 
     await act(
       async () =>
         await sessionHook.current.set(
-          "lastAuthenticationTime",
-          lastAuthenticationTime
+          "lastAuthenticationDate",
+          lastAuthenticationDate
         )
     );
 
-    expect(handlerIsCalled).toBe(true);
+    expect(handlerIsCalled).toStrictEqual(true);
   });
 
   test("persistance - simple set", async () => {
     const sessionHook = getSessionHook();
 
-    const lastAuthenticationTime = new Date().getTime();
+    const lastAuthenticationDate = new Date();
 
     await act(
       async () =>
         await sessionHook.current.set(
-          "lastAuthenticationTime",
-          lastAuthenticationTime,
+          "lastAuthenticationDate",
+          lastAuthenticationDate,
           { persist: true }
         )
     );
 
-    const localStorageState = getLocalStorageState();
+    const localStorageState = getLocalStorageState(
+      sessionDefaults.localStorageKey
+    );
 
-    expect(localStorageState.lastAuthenticationTime).toEqual(
-      lastAuthenticationTime
+    expect(localStorageState.lastAuthenticationDate).toEqual(
+      lastAuthenticationDate
     );
   });
 
@@ -124,47 +126,77 @@ describe("useUISession", () => {
 
     let handlerIsCalled = false;
 
-    const handler = async (_: number, _2: number) => {
+    const handler: IUISessionHandler = async () => {
       handlerIsCalled = !handlerIsCalled;
     };
 
-    const newAuthenticationTime = new Date().getTime();
+    const newAuthenticationDate = new Date();
 
-    act(() => sessionHook.current.onSet("lastAuthenticationTime", handler));
+    act(() => sessionHook.current.onSet("lastAuthenticationDate", handler));
 
     await act(
       async () =>
         await sessionHook.current.set(
-          "lastAuthenticationTime",
-          newAuthenticationTime,
+          "lastAuthenticationDate",
+          newAuthenticationDate,
           {
             persist: true,
           }
         )
     );
 
-    const localStorageState = getLocalStorageState();
+    const localStorageState = getLocalStorageState(
+      sessionDefaults.localStorageKey
+    );
 
-    expect(handlerIsCalled).toBe(true);
-    expect(localStorageState.lastAuthenticationTime).toBe(
-      newAuthenticationTime
+    expect(handlerIsCalled).toStrictEqual(true);
+    expect(localStorageState.lastAuthenticationDate).toStrictEqual(
+      newAuthenticationDate
     );
   });
 
   test("uses existing values from localStorage, and defaults for rest", () => {
     const sessionHook = getSessionHook();
 
-    const localStorageState = getLocalStorageState();
+    const localStorageState = getLocalStorageState(
+      sessionDefaults.localStorageKey
+    );
 
     const localStorageStateKeys = Object.keys(localStorageState);
 
-    for (const key of Object.keys(sessionDefaults)) {
+    const { localStorageKey: _, ...defaultState } = sessionDefaults;
+
+    for (const key of Object.keys(defaultState)) {
       const value = sessionHook.current.state[key];
       if (localStorageStateKeys.includes(key)) {
-        expect(value).toBe(localStorageState[key]);
+        expect(value).toStrictEqual(localStorageState[key]);
       } else {
-        expect(value).toBe(sessionDefaults[key]);
+        expect(value).toStrictEqual(sessionDefaults[key]);
       }
     }
+  });
+
+  test("value and previousValue", async () => {
+    const sessionHook = getSessionHook();
+
+    const previousValue = new Date("04-01-2000 00:00:00");
+    const newValue = new Date("05-01-2000 00:00:00");
+
+    await act(
+      async () =>
+        await sessionHook.current.set("lastAuthenticationDate", previousValue)
+    );
+
+    const handler: IUISessionHandler = async (e) => {
+      expect(e.data.previousValue).toBe(previousValue);
+      expect(e.data.value).toBe(newValue);
+    };
+
+    act(() => sessionHook.current.onSet("lastAuthenticationDate", handler));
+
+    await act(
+      async () =>
+        await sessionHook.current.set("lastAuthenticationDate", newValue)
+    );
   });
 });
